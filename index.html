@@ -136,6 +136,43 @@ const orderDate = document.getElementById("orderDate");
 
 // Default date
 orderDate.value = new Date().toISOString().split("T")[0];
+
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+
+  submitBtn.disabled = true;
+  submitBtn.innerText = "SAVING...";
+
+  const formData = new URLSearchParams(
+    Object.fromEntries(new FormData(form))
+  );
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: formData   // 👈 NO headers, NO JSON
+    });
+
+    const json = await res.json();
+
+    if (json.success) {
+      alert("✅ Order submitted successfully!\n\nOrder ID: " + json.orderId);
+      form.reset();
+      orderDate.value = new Date().toISOString().split("T")[0];
+    } else {
+      alert("❌ " + json.message);
+    }
+
+  } catch (err) {
+    alert("❌ Server error: " + err.message);
+  }
+
+  submitBtn.disabled = false;
+  submitBtn.innerText = "SUBMIT ORDER";
+});
+
+
 </script>
 
 
