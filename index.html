@@ -9,7 +9,7 @@
     * { box-sizing: border-box; }
 
     body {
-      //font-family: system-ui;
+      font-family: system-ui;
       background: #f5f6fa;
       padding: 12px;
       margin: 0;
@@ -138,11 +138,11 @@ const orderDate = document.getElementById("orderDate");
 orderDate.value = new Date().toISOString().split("T")[0];
 
 // Uppercase enforcement
-document.addEventListener("input", e => {
-  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
-    e.target.value = e.target.value.toUpperCase();
-  }
-});
+//document.addEventListener("input", e => {
+  //if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
+  //  e.target.value = e.target.value.toUpperCase();
+ // }
+//});
 
 form.addEventListener("submit", async e => {
   e.preventDefault();
