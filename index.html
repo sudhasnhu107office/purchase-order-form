@@ -173,6 +173,16 @@ form.addEventListener("submit", async e => {
 });
 
 
+// Uppercase enforcement
+document.addEventListener("input", e => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
+    e.target.value = e.target.value.toUpperCase();
+  }
+});
+
+
+
+
 </script>
 
 
