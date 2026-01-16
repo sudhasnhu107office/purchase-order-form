@@ -138,6 +138,14 @@ const orderDate = document.getElementById("orderDate");
 orderDate.value = new Date().toISOString().split("T")[0];
 
 
+
+// Uppercase enforcement
+document.addEventListener("input", e => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
+    e.target.value = e.target.value.toUpperCase();
+  }
+});
+
 form.addEventListener("submit", async e => {
   e.preventDefault();
 
@@ -170,14 +178,6 @@ form.addEventListener("submit", async e => {
 
   submitBtn.disabled = false;
   submitBtn.innerText = "SUBMIT ORDER";
-});
-
-
-// Uppercase enforcement
-document.addEventListener("input", e => {
-  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
-    e.target.value = e.target.value.toUpperCase();
-  }
 });
 
 
