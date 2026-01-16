@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    *, *::before, *::after { box-sizing: border-box; }
+    * { box-sizing: border-box; }
 
     body {
       font-family: system-ui;
@@ -122,18 +122,17 @@
     <textarea name="remark"></textarea>
 
     <button type="submit" id="submitBtn">SUBMIT ORDER</button>
-
   </form>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxvs4kkr4aJmBYrkaWyBkzPAcbqzlpBNfeVc_ojw_GsGDL7RwnIL5kA_CITaAyM1jRd/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbynxazHHnD4FFOCzsqMgp4Rs_lcD5-OsKXQgFGuDPQlLw5A-meKi9O3pc6x9DDjvVug/exec";
 
 const form = document.getElementById("orderForm");
 const submitBtn = document.getElementById("submitBtn");
 const orderDate = document.getElementById("orderDate");
 
-// Default today
+// Default date
 orderDate.value = new Date().toISOString().split("T")[0];
 
 // Uppercase enforcement
@@ -149,17 +148,17 @@ form.addEventListener("submit", async e => {
   submitBtn.disabled = true;
   submitBtn.innerText = "SAVING...";
 
-  const formData = Object.fromEntries(new FormData(form));
+  const formData = new URLSearchParams(
+    Object.fromEntries(new FormData(form))
+  );
 
   try {
     const res = await fetch(API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
+      body: formData   // 👈 NO headers, NO JSON
     });
 
-    const text = await res.text();
-    const json = JSON.parse(text);
+    const json = await res.json();
 
     if (json.success) {
       alert("✅ Order submitted successfully!\n\nOrder ID: " + json.orderId);
