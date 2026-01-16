@@ -139,11 +139,10 @@ orderDate.value = new Date().toISOString().split("T")[0];
 
 
 
+// Uppercase enforcement
 document.addEventListener("input", e => {
-  const el = e.target;
-
-  if (el.matches('input[type="text"], textarea')) {
-    el.value = el.value.toUpperCase();
+  if ((e.target.tagName === "INPUT" && e.target.type === "text") || e.target.tagName === "TEXTAREA") {
+    e.target.value = e.target.value.toUpperCase();
   }
 });
 
