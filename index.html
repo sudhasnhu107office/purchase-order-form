@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
+    * { box-sizing: border-box; }
     body {
       font-family: system-ui;
       background: #f5f6fa;
@@ -19,13 +20,22 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,.08);
     }
+    label {
+      font-weight: 600;
+      margin-top: 12px;
+      display: block;
+    }
     input, select, textarea, button {
       width: 100%;
       padding: 12px;
-      margin-top: 8px;
+      margin-top: 6px;
       border-radius: 8px;
       border: 1px solid #ccc;
       font-size: 16px;
+    }
+    textarea {
+      resize: none;
+      height: 70px;
     }
     button {
       background: #1a73e8;
@@ -46,22 +56,62 @@
   <h2>Purchase Order</h2>
 
   <form id="poForm">
+    <label>Order Date</label>
     <input type="date" name="orderDate" required>
-    <input type="text" name="partyName" placeholder="Party Name" required>
-    <input type="number" name="rate" min="0" step="0.01" placeholder="Rate" required>
-    <input type="number" name="qty" step="0.01" placeholder="Quantity" required>
-    <button type="submit" id="btn">SUBMIT</button>
+
+    <label>Party Name</label>
+    <input type="text" name="partyName" required>
+
+    <label>Material Type</label>
+    <select name="materialType" required>
+      <option value="">SELECT</option>
+      <option value="LOCAL">LOCAL</option>
+      <option value="COMPANY">COMPANY</option>
+      <option value="EC">EC</option>
+      <option value="CR PASS">CR PASS</option>
+    </select>
+
+    <label>Rate</label>
+    <input type="number" name="rate" min="0" step="0.01" required>
+
+    <label>Quantity (Ton)</label>
+    <input type="number" name="qty" step="0.01" required>
+
+    <label>No. of Coils</label>
+    <input type="number" name="coils" required>
+
+    <label>Payment Type</label>
+    <select name="paymentType" required>
+      <option value="">SELECT</option>
+      <option value="ROUTINE">ROUTINE</option>
+      <option value="CASH">CASH</option>
+    </select>
+
+    <label>Remark</label>
+    <textarea name="remark"></textarea>
+
+    <button type="submit" id="btn">SUBMIT ORDER</button>
   </form>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzDFEMGpn-k5tIig0fBWNqBx_yaFnMByOfF6fpQ91dlR1rSVm6J4qCUWIb5DmXorI8/exec";
-
+const API_URL = "PASTE_YOUR_SCRIPT_EXEC_URL_HERE";
 const form = document.getElementById("poForm");
 const btn = document.getElementById("btn");
 
+// Default today
+form.orderDate.value = new Date().toISOString().split("T")[0];
+
+// Uppercase
+document.addEventListener("input", e => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
+    e.target.value = e.target.value.toUpperCase();
+  }
+});
+
 form.addEventListener("submit", async e => {
   e.preventDefault();
+
   btn.disabled = true;
   btn.innerText = "SAVING...";
 
@@ -75,14 +125,21 @@ form.addEventListener("submit", async e => {
     });
 
     const json = await res.json();
-    alert("✅ Order Saved\nID: " + json.orderId);
-    form.reset();
-  } catch (err) {
-    alert("❌ Error saving order");
+
+    if (json.status === "success") {
+      alert("✅ Order Submitted\nOrder ID: " + json.orderId);
+      form.reset();
+      form.orderDate.value = new Date().toISOString().split("T")[0];
+    } else {
+      alert("❌ " + json.message);
+    }
+
+  } catch {
+    alert("❌ Server error");
   }
 
   btn.disabled = false;
-  btn.innerText = "SUBMIT";
+  btn.innerText = "SUBMIT ORDER";
 });
 </script>
 
