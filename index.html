@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Purchase Order</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: system-ui;
+      background: #f5f6fa;
+      padding: 12px;
+    }
+    .card {
+      max-width: 480px;
+      margin: auto;
+      background: #fff;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      margin-top: 16px;
+      font-weight: bold;
+    }
+    button:disabled {
+      background: #9bbcff;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>Purchase Order</h2>
+
+  <form id="poForm">
+    <input type="date" name="orderDate" required>
+    <input type="text" name="partyName" placeholder="Party Name" required>
+    <input type="number" name="rate" min="0" step="0.01" placeholder="Rate" required>
+    <input type="number" name="qty" step="0.01" placeholder="Quantity" required>
+    <button type="submit" id="btn">SUBMIT</button>
+  </form>
+</div>
+
+<script>
+const API_URL = "YOUR_SCRIPT_URL";
+
+const form = document.getElementById("poForm");
+const btn = document.getElementById("btn");
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  btn.disabled = true;
+  btn.innerText = "SAVING...";
+
+  const data = Object.fromEntries(new FormData(form));
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" }
+    });
+
+    const json = await res.json();
+    alert("✅ Order Saved\nID: " + json.orderId);
+    form.reset();
+  } catch (err) {
+    alert("❌ Error saving order");
+  }
+
+  btn.disabled = false;
+  btn.innerText = "SUBMIT";
+});
+</script>
+
+</body>
+</html>
