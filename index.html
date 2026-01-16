@@ -127,57 +127,7 @@
   </form>
 </div>
 
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbynxazHHnD4FFOCzsqMgp4Rs_lcD5-OsKXQgFGuDPQlLw5A-meKi9O3pc6x9DDjvVug/exec";
 
-const form = document.getElementById("orderForm");
-const submitBtn = document.getElementById("submitBtn");
-const orderDate = document.getElementById("orderDate");
-
-// Default date
-orderDate.value = new Date().toISOString().split("T")[0];
-
-// Uppercase enforcement
-//document.addEventListener("input", e => {
-  //if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
-  //  e.target.value = e.target.value.toUpperCase();
- // }
-//});
-
-form.addEventListener("submit", async e => {
-  e.preventDefault();
-
-  submitBtn.disabled = true;
-  submitBtn.innerText = "SAVING...";
-
-  const formData = new URLSearchParams(
-    Object.fromEntries(new FormData(form))
-  );
-
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      body: formData   // 👈 NO headers, NO JSON
-    });
-
-    const json = await res.json();
-
-    if (json.success) {
-      alert("✅ Order submitted successfully!\n\nOrder ID: " + json.orderId);
-      form.reset();
-      orderDate.value = new Date().toISOString().split("T")[0];
-    } else {
-      alert("❌ " + json.message);
-    }
-
-  } catch (err) {
-    alert("❌ Server error: " + err.message);
-  }
-
-  submitBtn.disabled = false;
-  submitBtn.innerText = "SUBMIT ORDER";
-});
-</script>
 
 </body>
 </html>
