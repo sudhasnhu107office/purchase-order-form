@@ -151,6 +151,12 @@ document.addEventListener("input", e => {
   }
 });
 
+const coils = Number(data.coils);
+
+if (!Number.isInteger(coils) || coils < 0) {
+  throw new Error("No. of coils must be a whole number");
+}
+
 // Uppercase enforcement
 document.addEventListener("input", e => {
   if ((e.target.tagName === "INPUT" && e.target.type === "text") || e.target.tagName === "TEXTAREA") {
