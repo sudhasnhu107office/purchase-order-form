@@ -64,6 +64,7 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbw4g9ol3mf5Cg16pluv2gt-EDPYJbhf3TqydRVIF07_i_LOtvzGwoolExzruyF2DCY-/exec?action=list";
+const MAX_COLUMNS = 10;
 
 const table = document.getElementById("dataTable");
 const thead = table.querySelector("thead");
@@ -79,21 +80,23 @@ fetch(API_URL)
       return;
     }
 
+    const keys = Object.keys(data[0]).slice(0, MAX_COLUMNS);
+
     // Header
-    const hr = document.createElement("tr");
-    Object.keys(data[0]).forEach(k => {
+    const headerRow = document.createElement("tr");
+    keys.forEach(key => {
       const th = document.createElement("th");
-      th.textContent = k;
-      hr.appendChild(th);
+      th.textContent = key;
+      headerRow.appendChild(th);
     });
-    thead.appendChild(hr);
+    thead.appendChild(headerRow);
 
     // Rows
     data.forEach(row => {
       const tr = document.createElement("tr");
-      Object.values(row).forEach(v => {
+      keys.forEach(key => {
         const td = document.createElement("td");
-        td.textContent = v;
+        td.textContent = row[key];
         tr.appendChild(td);
       });
       tbody.appendChild(tr);
