@@ -104,7 +104,7 @@
     <label>Rate</label>
     <div class="currency">
       <span>₹</span>
-      <input type="number" name="rate" step="0.01" onchange="setTwoNumberDecimal(this)" required>
+      <input type="number" name="rate" step="0.01" required>
     </div>
 
     <label>Quantity (In Ton)</label>
@@ -141,12 +141,6 @@ const coils = Number(data.coils);
 if (!Number.isInteger(coils) || coils < 0) {
   throw new Error("No. of coils must be a whole number");
 }
-
-function setTwoNumberDecimal(el) {
-    el.value = parseFloat(el.value).toFixed(2);
-}
-
-
   
 // Uppercase enforcement
 document.addEventListener("input", e => {
