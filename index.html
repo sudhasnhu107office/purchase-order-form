@@ -137,35 +137,10 @@ const orderDate = document.getElementById("orderDate");
 // Default date
 orderDate.value = new Date().toISOString().split("T")[0];
 
-document.addEventListener("input", e => {
-  const el = e.target;
-
-  if (el.name !== "coils") return;
-
-  // Save cursor position
-  const start = el.selectionStart;
-  const end = el.selectionEnd;
-
-  // Original value
-  const original = el.value;
-
-  // Remove non-digits
-  const cleaned = original.replace(/\D/g, "");
-
-  // If nothing changed, do nothing
-  if (original === cleaned) return;
-
-  // Update value
-  el.value = cleaned;
-
-  // Calculate cursor shift
-  const diff = original.length - cleaned.length;
-
-  // Restore cursor position
-  const newPos = Math.max(start - diff, 0);
-  el.setSelectionRange(newPos, newPos);
-});
-
+const coils = Number(data.coils);
+if (!Number.isInteger(coils) || coils < 0) {
+  throw new Error("No. of coils must be a whole number");
+}
 // Uppercase enforcement
 document.addEventListener("input", e => {
   if ((e.target.tagName === "INPUT" && e.target.type === "text") || e.target.tagName === "TEXTAREA") {
