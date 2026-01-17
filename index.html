@@ -137,6 +137,13 @@ const orderDate = document.getElementById("orderDate");
 // Default date
 orderDate.value = new Date().toISOString().split("T")[0];
 
+document.addEventListener("input", e => {
+  const el = e.target;
+
+  if (el.name === "coils") {
+    el.value = el.value.replace(/\D/g, "");
+  }
+});
 
 
 // Uppercase enforcement
