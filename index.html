@@ -138,10 +138,8 @@ const orderDate = document.getElementById("orderDate");
 orderDate.value = new Date().toISOString().split("T")[0];
 
 document.addEventListener("input", e => {
-  const el = e.target;
-
-  if (el.name === "coils") {
-    el.value = el.value.replace(/\D/g, "");
+  if (e.target.name === "coils") {
+    e.target.value = e.target.value.replace(/\D/g, "");
   }
 });
 
