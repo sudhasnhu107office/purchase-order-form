@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Purchase Orders – View</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: system-ui;
+      background: #f5f6fa;
+      margin: 0;
+      padding: 12px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #1a73e8;
+      color: #fff;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:hover {
+      background: #f1f5ff;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Purchase Orders</h2>
+
+<div class="table-wrap">
+  <table id="dataTable">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbynxazHHnD4FFOCzsqMgp4Rs_lcD5-OsKXQgFGuDPQlLw5A-meKi9O3pc6x9DDjvVug/exec?action=list";
+
+const table = document.getElementById("dataTable");
+const thead = table.querySelector("thead");
+const tbody = table.querySelector("tbody");
+
+fetch(API_URL)
+  .then(res => res.json())
+  .then(data => {
+    if (!data.length) return;
+
+    // Header
+    const headerRow = document.createElement("tr");
+    Object.keys(data[0]).forEach(key => {
+      const th = document.createElement("th");
+      th.textContent = key;
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+
+    // Rows
+    data.forEach(row => {
+      const tr = document.createElement("tr");
+      Object.values(row).forEach(val => {
+        const td = document.createElement("td");
+        td.textContent = val;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  })
+  .catch(err => {
+    alert("❌ Failed to load data");
+    console.error(err);
+  });
+</script>
+
+</body>
+</html>
