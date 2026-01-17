@@ -141,6 +141,37 @@ const coils = Number(data.coils);
 if (!Number.isInteger(coils) || coils < 0) {
   throw new Error("No. of coils must be a whole number");
 }
+
+document.addEventListener("input", e => {
+  const el = e.target;
+
+  if (el.name !== "rate") return;
+
+  // Save cursor
+  const start = el.selectionStart;
+
+  // Allow only digits and dot
+  let value = el.value.replace(/[^0-9.]/g, "");
+
+  // Allow only one dot
+  const parts = value.split(".");
+  if (parts.length > 2) {
+    value = parts[0] + "." + parts.slice(1).join("");
+  }
+
+  // Limit to 2 decimals
+  if (parts[1]?.length > 2) {
+    value = parts[0] + "." + parts[1].slice(0, 2);
+  }
+
+  el.value = value;
+
+  // Restore cursor
+  el.setSelectionRange(start, start);
+});
+
+
+  
 // Uppercase enforcement
 document.addEventListener("input", e => {
   if ((e.target.tagName === "INPUT" && e.target.type === "text") || e.target.tagName === "TEXTAREA") {
