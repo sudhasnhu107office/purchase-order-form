@@ -137,12 +137,6 @@ const orderDate = document.getElementById("orderDate");
 // Default date
 orderDate.value = new Date().toISOString().split("T")[0];
 
-document.addEventListener("keydown", e => {
-  if (e.target.name === "coils" && e.key === ".") {
-    e.preventDefault();
-  }
-});
-
 document.addEventListener("input", e => {
   const el = e.target;
 
