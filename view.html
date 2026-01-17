@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Purchase Orders</title>
+  <title>Purchase Orders – Deck View</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -18,35 +18,52 @@
       margin-bottom: 12px;
     }
 
-    .table-wrap {
-      overflow-x: auto;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    .deck {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 12px;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 900px;
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border-left: 5px solid #1a73e8;
     }
 
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
+    .card-header {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: #1a73e8;
+    }
+
+    .field {
+      display: flex;
+      justify-content: space-between;
       font-size: 14px;
+      margin-bottom: 6px;
+      gap: 8px;
+    }
+
+    .label {
+      font-weight: 600;
+      color: #555;
       white-space: nowrap;
     }
 
-    th {
-      background: #1a73e8;
-      color: #fff;
-      position: sticky;
-      top: 0;
+    .value {
+      text-align: right;
+      color: #000;
+      overflow-wrap: anywhere;
     }
 
-    tr:hover {
-      background: #f1f5ff;
+    .empty {
+      text-align: center;
+      color: #777;
+      margin-top: 40px;
+      font-size: 16px;
     }
   </style>
 </head>
@@ -55,20 +72,13 @@
 
 <h2>Purchase Orders</h2>
 
-<div class="table-wrap">
-  <table id="dataTable">
-    <thead></thead>
-    <tbody></tbody>
-  </table>
-</div>
+<div class="deck" id="deck"></div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbw4g9ol3mf5Cg16pluv2gt-EDPYJbhf3TqydRVIF07_i_LOtvzGwoolExzruyF2DCY-/exec?action=list";
-const MAX_COLUMNS = 10;
+const MAX_FIELDS = 10;
 
-const table = document.getElementById("dataTable");
-const thead = table.querySelector("thead");
-const tbody = table.querySelector("tbody");
+const deck = document.getElementById("deck");
 
 fetch(API_URL)
   .then(res => res.text())
@@ -76,30 +86,41 @@ fetch(API_URL)
     const data = JSON.parse(text);
 
     if (!Array.isArray(data) || data.length === 0) {
-      tbody.innerHTML = "<tr><td>No data found</td></tr>";
+      deck.innerHTML = "<div class='empty'>No data found</div>";
       return;
     }
 
-    const keys = Object.keys(data[0]).slice(0, MAX_COLUMNS);
+    const keys = Object.keys(data[0]).slice(0, MAX_FIELDS);
 
-    // Header
-    const headerRow = document.createElement("tr");
-    keys.forEach(key => {
-      const th = document.createElement("th");
-      th.textContent = key;
-      headerRow.appendChild(th);
-    });
-    thead.appendChild(headerRow);
-
-    // Rows
     data.forEach(row => {
-      const tr = document.createElement("tr");
+      const card = document.createElement("div");
+      card.className = "card";
+
+      // Header (first key acts like AppSheet primary column)
+      const header = document.createElement("div");
+      header.className = "card-header";
+      header.textContent = row[keys[1]] || "Purchase Order";
+      card.appendChild(header);
+
+      // Fields
       keys.forEach(key => {
-        const td = document.createElement("td");
-        td.textContent = row[key];
-        tr.appendChild(td);
+        const field = document.createElement("div");
+        field.className = "field";
+
+        const label = document.createElement("div");
+        label.className = "label";
+        label.textContent = key;
+
+        const value = document.createElement("div");
+        value.className = "value";
+        value.textContent = row[key] ?? "";
+
+        field.appendChild(label);
+        field.appendChild(value);
+        card.appendChild(field);
       });
-      tbody.appendChild(tr);
+
+      deck.appendChild(card);
     });
   })
   .catch(err => {
