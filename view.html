@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Purchase Orders – Deck View</title>
+  <title>Purchase Orders – List View</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -18,45 +18,48 @@
       margin-bottom: 12px;
     }
 
-    .deck {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 12px;
+    .date-group {
+      margin-bottom: 18px;
     }
 
-    .card {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      border-left: 5px solid #1a73e8;
-    }
-
-    .card-header {
+    .date-header {
       font-weight: bold;
-      font-size: 16px;
+      font-size: 15px;
+      background: #1a73e8;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
       margin-bottom: 8px;
-      color: #1a73e8;
     }
 
-    .field {
-      display: flex;
-      justify-content: space-between;
+    .list {
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      padding: 10px 12px;
+      border-bottom: 1px solid #eee;
       font-size: 14px;
-      margin-bottom: 6px;
-      gap: 8px;
+      align-items: center;
     }
 
-    .label {
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .party {
       font-weight: 600;
-      color: #555;
-      white-space: nowrap;
+      color: #000;
     }
 
-    .value {
+    .num {
       text-align: right;
-      color: #000;
-      overflow-wrap: anywhere;
+      color: #333;
     }
 
     .empty {
@@ -72,13 +75,18 @@
 
 <h2>Purchase Orders</h2>
 
-<div class="deck" id="deck"></div>
+<div id="container"></div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbw4g9ol3mf5Cg16pluv2gt-EDPYJbhf3TqydRVIF07_i_LOtvzGwoolExzruyF2DCY-/exec?action=list";
-const MAX_FIELDS = 10;
 
-const deck = document.getElementById("deck");
+const container = document.getElementById("container");
+
+// Helper to format date (YYYY-MM-DD → DD-MM-YYYY)
+function formatDate(d) {
+  const date = new Date(d);
+  return date.toLocaleDateString("en-GB");
+}
 
 fetch(API_URL)
   .then(res => res.text())
@@ -86,41 +94,50 @@ fetch(API_URL)
     const data = JSON.parse(text);
 
     if (!Array.isArray(data) || data.length === 0) {
-      deck.innerHTML = "<div class='empty'>No data found</div>";
+      container.innerHTML = "<div class='empty'>No data found</div>";
       return;
     }
 
-    const keys = Object.keys(data[0]).slice(0, MAX_FIELDS);
+    // Sort by ORDER DATE DESC (assumes column name is "ORDER DATE")
+    data.sort((a, b) => new Date(b["ORDER DATE"]) - new Date(a["ORDER DATE"]));
 
+    // Group by ORDER DATE
+    const grouped = {};
     data.forEach(row => {
-      const card = document.createElement("div");
-      card.className = "card";
+      const dateKey = row["ORDER DATE"];
+      if (!grouped[dateKey]) grouped[dateKey] = [];
+      grouped[dateKey].push(row);
+    });
 
-      // Header (first key acts like AppSheet primary column)
+    // Render
+    Object.keys(grouped).forEach(dateKey => {
+      const groupDiv = document.createElement("div");
+      groupDiv.className = "date-group";
+
       const header = document.createElement("div");
-      header.className = "card-header";
-      header.textContent = row[keys[1]] || "Purchase Order";
-      card.appendChild(header);
+      header.className = "date-header";
+      header.textContent = formatDate(dateKey);
+      groupDiv.appendChild(header);
 
-      // Fields
-      keys.forEach(key => {
-        const field = document.createElement("div");
-        field.className = "field";
+      const list = document.createElement("div");
+      list.className = "list";
 
-        const label = document.createElement("div");
-        label.className = "label";
-        label.textContent = key;
+      grouped[dateKey].forEach(row => {
+        const r = document.createElement("div");
+        r.className = "row";
 
-        const value = document.createElement("div");
-        value.className = "value";
-        value.textContent = row[key] ?? "";
+        r.innerHTML = `
+          <div class="party">${row["PARTY NAME"]}</div>
+          <div class="num">${row["RATE"]}</div>
+          <div class="num">${row["QTY (IN TON)"]}</div>
+          <div class="num">${row["NO. OF COILS"]}</div>
+        `;
 
-        field.appendChild(label);
-        field.appendChild(value);
-        card.appendChild(field);
+        list.appendChild(r);
       });
 
-      deck.appendChild(card);
+      groupDiv.appendChild(list);
+      container.appendChild(groupDiv);
     });
   })
   .catch(err => {
