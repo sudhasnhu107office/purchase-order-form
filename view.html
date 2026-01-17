@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Purchase Orders – View</title>
+  <title>Purchase Orders</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -34,7 +34,6 @@
     th, td {
       padding: 10px;
       border-bottom: 1px solid #ddd;
-      text-align: left;
       font-size: 14px;
       white-space: nowrap;
     }
@@ -64,32 +63,37 @@
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwCZFTmR6yu42ipNfS6K7MW2qt3Znd4a2wkKCTrEY1t_HzixmydcNTBFw-CjZmLnkAq/exec?action=list";
+const API_URL = "https://script.google.com/macros/s/AKfycbw4g9ol3mf5Cg16pluv2gt-EDPYJbhf3TqydRVIF07_i_LOtvzGwoolExzruyF2DCY-/exec?action=list";
 
 const table = document.getElementById("dataTable");
 const thead = table.querySelector("thead");
 const tbody = table.querySelector("tbody");
 
 fetch(API_URL)
-  .then(res => res.json())
-  .then(data => {
-    if (!data.length) return;
+  .then(res => res.text())
+  .then(text => {
+    const data = JSON.parse(text);
+
+    if (!Array.isArray(data) || data.length === 0) {
+      tbody.innerHTML = "<tr><td>No data found</td></tr>";
+      return;
+    }
 
     // Header
-    const headerRow = document.createElement("tr");
-    Object.keys(data[0]).forEach(key => {
+    const hr = document.createElement("tr");
+    Object.keys(data[0]).forEach(k => {
       const th = document.createElement("th");
-      th.textContent = key;
-      headerRow.appendChild(th);
+      th.textContent = k;
+      hr.appendChild(th);
     });
-    thead.appendChild(headerRow);
+    thead.appendChild(hr);
 
     // Rows
     data.forEach(row => {
       const tr = document.createElement("tr");
-      Object.values(row).forEach(val => {
+      Object.values(row).forEach(v => {
         const td = document.createElement("td");
-        td.textContent = val;
+        td.textContent = v;
         tr.appendChild(td);
       });
       tbody.appendChild(tr);
