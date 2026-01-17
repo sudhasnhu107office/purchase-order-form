@@ -143,6 +143,13 @@ document.addEventListener("keydown", e => {
   }
 });
 
+document.addEventListener("input", e => {
+  const el = e.target;
+
+  if (el.name === "coils") {
+    el.value = el.value.replace(/\D/g, "");
+  }
+});
 
 // Uppercase enforcement
 document.addEventListener("input", e => {
